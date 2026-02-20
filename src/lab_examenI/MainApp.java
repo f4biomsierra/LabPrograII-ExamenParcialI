@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.*;
 
 /**
  *
@@ -19,6 +20,8 @@ public class MainApp extends JFrame{
     private JPanel panelTarjetas;
     private JPanel panelCentro;  
     private Font fuente = new Font ("Arial", Font.PLAIN,30);
+    private JSpinner dateSpinner;
+    private JLabel labelFechaDinamica;
     
     public static void main(String[] args) {
         MainApp main = new MainApp();
@@ -61,13 +64,14 @@ public class MainApp extends JFrame{
     private void agregarItem(){
         limpiarCentro();
         panelCentro.setLayout(null);
-
+        
         JLabel labelTipo = new JLabel("Tipo de Ítem:");
         labelTipo.setFont(fuente);
         labelTipo.setBounds(50, 50, 200, 30); 
 
         String[] tipos = {"Movie", "Game"};
         JComboBox<String> comboTipo = new JComboBox<>(tipos);
+        
         comboTipo.setFont(fuente);
         comboTipo.setBounds(350, 50, 200, 30); 
         
@@ -85,14 +89,28 @@ public class MainApp extends JFrame{
 
         JTextField nombre_texto= new JTextField();
         nombre_texto.setFont(fuente);
-        nombre_texto.setBounds(350, 150, 200, 30); 
+        nombre_texto.setBounds(350, 150, 200, 30);
 
         JButton btnImagen=new JButton("Cargar Imagen");
         btnImagen.setFont(fuente);
-        btnImagen.setBounds(50, 200, 250, 40);
+        btnImagen.setBounds(50, 260, 250, 40);
 
         JLabel preview= new JLabel();
-        preview.setBounds(350, 200, 100, 100);
+        preview.setBounds(350, 260, 100, 100);
+        
+        labelFechaDinamica = new JLabel("Fecha de Estreno:");
+        labelFechaDinamica.setBounds(50, 170, 250, 30);
+        
+        SpinnerDateModel model = new SpinnerDateModel();
+        dateSpinner = new JSpinner(model);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+        dateSpinner.setEditor(editor);
+        dateSpinner.setBounds(350, 170, 200, 30);
+
+        comboTipo.addActionListener(e -> {
+            String seleccion = (String) comboTipo.getSelectedItem();
+            labelFechaDinamica.setText(seleccion.equals("Movie") ? "Fecha de Estreno:" : "Fecha de Publicación:");
+        });
         
         JButton btnGuardar= new JButton("Guardar Ítem");
         btnGuardar.setFont(fuente);
@@ -105,6 +123,8 @@ public class MainApp extends JFrame{
         panelCentro.add(labelNombre);
         panelCentro.add(nombre_texto);
         panelCentro.add(btnImagen);
+        panelCentro.add(labelFechaDinamica); 
+        panelCentro.add(dateSpinner);
         panelCentro.add(preview);
         panelCentro.add(btnGuardar);
         
@@ -120,14 +140,19 @@ public class MainApp extends JFrame{
             String codigo = codigo_texto.getText();
             String nombre = nombre_texto.getText();
             ImageIcon imagenSeleccionada=(ImageIcon) preview.getIcon();
-
+            Date fecha = (Date) dateSpinner.getValue();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(fecha);
+                
             if (tipo.equals("Movie")) {
                 Movie movie = new Movie(codigo, nombre);
                 movie.setImagen(imagenSeleccionada);
+                movie.setFechaEstreno(cal);
                 items.add(movie);
             } else {
                 Game game = new Game(codigo, nombre);
                 game.setImagen(imagenSeleccionada);
+                game.setFechaPublicacion(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
                 items.add(game);
                 game.submenu();
             }
