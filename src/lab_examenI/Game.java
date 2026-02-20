@@ -16,7 +16,7 @@ public class Game extends RentItem implements MenuActions {
     
     public Game(String codigo, String nombre){
         super(codigo, nombre, 20.0);
-        this.fechaPublicacion.getInstance();
+        this.fechaPublicacion=Calendar.getInstance();
         this.especificaciones=new ArrayList<>();
     }
     

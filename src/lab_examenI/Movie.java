@@ -41,7 +41,7 @@ public class Movie extends RentItem {
         if(getEstado().equals("ESTRENO") && dias>2){
             total=total+(dias-2)*50;
         } else if (getEstado().equals("NORMAL") && dias>5){
-            total=total+(dias-5)*50;
+            total=total+(dias-5)*30;
         }
         return total;
     }
