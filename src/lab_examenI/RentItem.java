@@ -6,11 +6,11 @@ import javax.swing.ImageIcon;
 public abstract class RentItem {
     
     //atributos
-    private String codigo;
-    private String nombre;
-    private double precioBase;
-    private int copiasDisponibles;
-    private ImageIcon imagen;
+    protected String codigo;
+    protected String nombre;
+    protected double precioBase;
+    protected int copiasDisponibles;
+    protected ImageIcon imagen;
     
     //constructor inicializar datos
     public RentItem(String codigo, String nombre, double precioBase){
