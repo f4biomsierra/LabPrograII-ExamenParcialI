@@ -13,7 +13,7 @@ public class Game extends RentItem implements MenuActions {
     protected Calendar fechaPublicacion;
     protected ArrayList<String> especificaciones;
     
-    public Game(String codigo, String nombre, double precioBase){
+    public Game(String codigo, String nombre){
         super(codigo, nombre, 20.0);
         this.fechaPublicacion.getInstance();
         this.especificaciones=new ArrayList<>();
