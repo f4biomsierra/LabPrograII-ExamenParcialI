@@ -11,8 +11,8 @@ import java.util.*;
 public class Movie extends RentItem {
     protected Calendar fechaEstreno;
     
-    public Movie(String codigo, String nombre, double precioBase){
-        super(codigo, nombre, precioBase);
+    public Movie(String codigo, String nombre){
+        super(codigo, nombre, 20.0);
         this.fechaEstreno=Calendar.getInstance();
     }
 

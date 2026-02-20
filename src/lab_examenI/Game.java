@@ -7,13 +7,14 @@ package lab_examenI;
 
 
 import java.util.*;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.*;
 
 public class Game extends RentItem implements MenuActions {
     protected Calendar fechaPublicacion;
     protected ArrayList<String> especificaciones;
     
-    public Game(String codigo, String nombre, double precioBase){
+    public Game(String codigo, String nombre){
         super(codigo, nombre, 20.0);
         this.fechaPublicacion.getInstance();
         this.especificaciones=new ArrayList<>();
@@ -36,40 +37,67 @@ public class Game extends RentItem implements MenuActions {
     
     @Override
     public void submenu(){
-        String[] opciones={"Actualizar fecha de publicación", "Agregar especificación, Ver especificaciones", "Cerrar"};
-        int opcionSeleccionada=JOptionPane.showOptionDialog(
-                null, 
-                "Opciones para: "+nombre,
-                "Submenú de Juego", 
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]
-        );
+        JDialog ventanaSubmenu=new JDialog();
+        ventanaSubmenu.setTitle("Opciones de Videojuego: "+nombre);
+        ventanaSubmenu.setSize(300, 350);
+        ventanaSubmenu.setModal(true);
+        ventanaSubmenu.setLocationRelativeTo(null);
+        ventanaSubmenu.setLayout(new GridLayout(4, 1, 10, 10));
         
-        if(opcionSeleccionada != -1 && opcionSeleccionada != 3){
-            ejecutarOpcion(opcionSeleccionada+1);
-        } 
+        JButton btnFecha=new JButton("Actualizar fecha de publicación");
+        JButton btnAgregar=new JButton("Agregar especificación");
+        JButton btnEspec=new JButton("Ver especificaciones");
+        JButton btnCerrar=new JButton("Regresar al Menú");
+        
+        btnFecha.addActionListener(evento->{
+            ejecutarOpcion(1);
+        });
+        
+        btnAgregar.addActionListener(evento->{
+            ejecutarOpcion(2);
+        });
+        
+        btnEspec.addActionListener(evento->{
+            ejecutarOpcion(3);
+        });
+        
+        btnCerrar.addActionListener(evento -> ventanaSubmenu.dispose());
+        
+        ventanaSubmenu.add(btnFecha);
+        ventanaSubmenu.add(btnAgregar);
+        ventanaSubmenu.add(btnEspec);
+        ventanaSubmenu.add(btnCerrar);
+        
+        ventanaSubmenu.setVisible(true);
     }
     
     @Override
     public void ejecutarOpcion(int opcion){
         switch (opcion){
             case 1:
-                int year=Integer.parseInt(JOptionPane.showInputDialog("Año: "));
-                int mes=Integer.parseInt(JOptionPane.showInputDialog("Mes (1-12):"));
-                int dia=Integer.parseInt(JOptionPane.showInputDialog("Día:"));
-                fechaPublicacion.set(year, mes-1, dia);
+                try{
+                    int year = Integer.parseInt(JOptionPane.showInputDialog("Año: "));
+                    int mes = Integer.parseInt(JOptionPane.showInputDialog("Mes (1-12):"));
+                    int dia = Integer.parseInt(JOptionPane.showInputDialog("Día:"));
+                    fechaPublicacion.set(year, mes - 1, dia);
+                    JOptionPane.showMessageDialog(null, "Fecha actualizada con éxito.");
+                } catch(Exception e){
+                    JOptionPane.showMessageDialog(null, "Error en los datos ingresados.");
+                }
                 break;
             case 2:
-                String spec=JOptionPane.showInputDialog("Nuevo especificación:");
-                if(spec != null) especificaciones.add(spec);
+                String nuevaEspecificacion=JOptionPane.showInputDialog("Nuevo especificación:");
+                if(nuevaEspecificacion != null && !nuevaEspecificacion.isEmpty()){
+                    especificaciones.add(nuevaEspecificacion);
+                }
                 break;
             case 3:
-                String listado=especificaciones.isEmpty() ?
-                        "No hay especificaciones." : listEspecificaciones(0);
-                JOptionPane.showMessageDialog(null, listado);
+                String textoFinal=especificaciones.isEmpty()?
+                        "No hay especifiaciones registradas." : listEspecificaciones(0);
+                
+                JTextArea areaTexto=new JTextArea(textoFinal);
+                areaTexto.setEditable(false);
+                JOptionPane.showMessageDialog(null, new JScrollPane(areaTexto), "Lista de Especificaciones", 1);
                 break;
         }
     }
