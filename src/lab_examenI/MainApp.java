@@ -61,108 +61,122 @@ public class MainApp extends JFrame{
         panelCentro.repaint();
     }
     
-    private void agregarItem(){
+    private void agregarItem() {
+    limpiarCentro();
+    panelCentro.setLayout(null);
+
+    JLabel labelTipo = new JLabel("Tipo de Ítem:");
+    labelTipo.setFont(fuente);
+    labelTipo.setBounds(50, 50, 200, 30);
+
+    String[] tipos = {"Movie", "Game"};
+    JComboBox<String> comboTipo = new JComboBox<>(tipos);
+    comboTipo.setFont(fuente);
+    comboTipo.setBounds(350, 50, 200, 30);
+
+    JLabel labelCodigo = new JLabel("Código:");
+    labelCodigo.setFont(fuente);
+    labelCodigo.setBounds(50, 100, 200, 30);
+
+    JTextField codigo_texto = new JTextField();
+    codigo_texto.setFont(fuente);
+    codigo_texto.setBounds(350, 100, 200, 30);
+
+    JLabel labelNombre = new JLabel("Nombre:");
+    labelNombre.setFont(fuente);
+    labelNombre.setBounds(50, 150, 200, 30);
+
+    JTextField nombre_texto = new JTextField();
+    nombre_texto.setFont(fuente);
+    nombre_texto.setBounds(350, 150, 200, 30);
+
+    JButton btnImagen = new JButton("Cargar Imagen");
+    btnImagen.setFont(fuente);
+    btnImagen.setBounds(50, 260, 250, 40);
+
+    JLabel preview = new JLabel();
+    preview.setBounds(350, 260, 100, 100);
+
+    labelFechaDinamica = new JLabel("Fecha de Estreno:");
+    labelFechaDinamica.setFont(fuente);
+    labelFechaDinamica.setBounds(50, 200, 320, 30);
+
+    SpinnerDateModel model = new SpinnerDateModel();
+    dateSpinner = new JSpinner(model);
+    JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
+    dateSpinner.setEditor(editor);
+    dateSpinner.setFont(fuente);
+    dateSpinner.setBounds(380, 200, 200, 30);
+
+    comboTipo.addActionListener(e -> {
+        String seleccion = (String) comboTipo.getSelectedItem();
+        labelFechaDinamica.setText(seleccion.equals("Movie") ? "Fecha de Estreno:" : "Fecha de Publicación:");
+    });
+
+    JButton btnGuardar = new JButton("Guardar Ítem");
+    btnGuardar.setFont(fuente);
+    btnGuardar.setBounds(350, 350, 300, 40);
+
+    panelCentro.add(labelTipo);
+    panelCentro.add(comboTipo);
+    panelCentro.add(labelCodigo);
+    panelCentro.add(codigo_texto);
+    panelCentro.add(labelNombre);
+    panelCentro.add(nombre_texto);
+    panelCentro.add(btnImagen);
+    panelCentro.add(labelFechaDinamica);
+    panelCentro.add(dateSpinner);
+    panelCentro.add(preview);
+    panelCentro.add(btnGuardar);
+
+    btnImagen.addActionListener(e -> {
+        ImageIcon img = cargarImagen();
+        if (img != null) {
+            preview.setIcon(img);
+        }
+    });
+
+    btnGuardar.addActionListener(e -> {
+        String tipo = comboTipo.getSelectedItem().toString();
+        String codigo = codigo_texto.getText().trim();
+        String nombre = nombre_texto.getText().trim();
+
+        // --- VALIDACIÓN DE CAMPOS VACÍOS ---
+        if (codigo.isEmpty() || nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor llene todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // --- VALIDACIÓN DE CÓDIGO ÚNICO ---
+        for (RentItem item : items) {
+            if (item.getCodigo().equals(codigo)) {
+                JOptionPane.showMessageDialog(this, "El código del ítem es inválido o ya existe", "Código Duplicado", JOptionPane.ERROR_MESSAGE);
+                return; // Sale del listener y no guarda nada
+            }
+        }
+
+        ImageIcon imagenSeleccionada = (ImageIcon) preview.getIcon();
+        Date fecha = (Date) dateSpinner.getValue();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+
+        if (tipo.equals("Movie")) {
+            Movie movie = new Movie(codigo, nombre);
+            movie.setImagen(imagenSeleccionada);
+            movie.setFechaEstreno(cal);
+            items.add(movie);
+        } else {
+            Game game = new Game(codigo, nombre);
+            game.setImagen(imagenSeleccionada);
+            game.setFechaPublicacion(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            items.add(game);
+            game.submenu();
+        }
+
+        JOptionPane.showMessageDialog(this, "Ítem agregado correctamente");
         limpiarCentro();
-        panelCentro.setLayout(null);
-        
-        JLabel labelTipo = new JLabel("Tipo de Ítem:");
-        labelTipo.setFont(fuente);
-        labelTipo.setBounds(50, 50, 200, 30); 
-
-        String[] tipos = {"Movie", "Game"};
-        JComboBox<String> comboTipo = new JComboBox<>(tipos);
-        
-        comboTipo.setFont(fuente);
-        comboTipo.setBounds(350, 50, 200, 30); 
-        
-        JLabel labelCodigo = new JLabel("Código:");
-        labelCodigo.setFont(fuente);
-        labelCodigo.setBounds(50, 100, 200, 30); 
-
-        JTextField codigo_texto = new JTextField();
-        codigo_texto.setFont(fuente);
-        codigo_texto.setBounds(350, 100, 200, 30);
-        
-        JLabel labelNombre =new JLabel("Nombre:");
-        labelNombre.setFont(fuente);
-        labelNombre.setBounds(50, 150, 200, 30); 
-
-        JTextField nombre_texto= new JTextField();
-        nombre_texto.setFont(fuente);
-        nombre_texto.setBounds(350, 150, 200, 30);
-
-        JButton btnImagen=new JButton("Cargar Imagen");
-        btnImagen.setFont(fuente);
-        btnImagen.setBounds(50, 260, 250, 40);
-
-        JLabel preview= new JLabel();
-        preview.setBounds(350, 260, 100, 100);
-        
-        labelFechaDinamica = new JLabel("Fecha de Estreno:");
-        labelFechaDinamica.setFont(fuente);
-        labelFechaDinamica.setBounds(50, 200, 320, 30);
-        
-        SpinnerDateModel model = new SpinnerDateModel();
-        dateSpinner = new JSpinner(model);
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
-        dateSpinner.setEditor(editor);
-        dateSpinner.setFont(fuente);
-        dateSpinner.setBounds(380, 200, 200, 30);
-
-        comboTipo.addActionListener(e -> {
-            String seleccion = (String) comboTipo.getSelectedItem();
-            labelFechaDinamica.setText(seleccion.equals("Movie") ? "Fecha de Estreno:" : "Fecha de Publicación:");
-        });
-        
-        JButton btnGuardar= new JButton("Guardar Ítem");
-        btnGuardar.setFont(fuente);
-        btnGuardar.setBounds(350, 350, 300, 40);
-        
-        panelCentro.add(labelTipo);
-        panelCentro.add(comboTipo);
-        panelCentro.add(labelCodigo);
-        panelCentro.add(codigo_texto);
-        panelCentro.add(labelNombre);
-        panelCentro.add(nombre_texto);
-        panelCentro.add(btnImagen);
-        panelCentro.add(labelFechaDinamica); 
-        panelCentro.add(dateSpinner);
-        panelCentro.add(preview);
-        panelCentro.add(btnGuardar);
-        
-        btnImagen.addActionListener(e -> {
-            ImageIcon img= cargarImagen();
-                if (img!= null) {
-                preview.setIcon(img);
-            }
-        });
-
-        btnGuardar.addActionListener(e -> {
-            String tipo = comboTipo.getSelectedItem().toString();
-            String codigo = codigo_texto.getText();
-            String nombre = nombre_texto.getText();
-            ImageIcon imagenSeleccionada = (ImageIcon) preview.getIcon();
-            Date fecha = (Date) dateSpinner.getValue();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(fecha);
-
-            if (tipo.equals("Movie")) {
-                Movie movie = new Movie(codigo, nombre);
-                movie.setImagen(imagenSeleccionada);
-                movie.setFechaEstreno(cal);
-                items.add(movie);
-            } else {
-                Game game = new Game(codigo, nombre);
-                game.setImagen(imagenSeleccionada);
-                game.setFechaPublicacion(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-                items.add(game);
-                game.submenu();
-            }
-
-            JOptionPane.showMessageDialog(this, "Ítem agregado correctamente");
-            limpiarCentro();
-        });
-    }
+    });
+}
 
     public void rentar() {
         limpiarCentro();
