@@ -100,14 +100,14 @@ public class MainApp extends JFrame{
         
         labelFechaDinamica = new JLabel("Fecha de Estreno:");
         labelFechaDinamica.setFont(fuente);
-        labelFechaDinamica.setBounds(50, 200, 250, 30);
+        labelFechaDinamica.setBounds(50, 200, 320, 30);
         
         SpinnerDateModel model = new SpinnerDateModel();
         dateSpinner = new JSpinner(model);
         JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
         dateSpinner.setEditor(editor);
         dateSpinner.setFont(fuente);
-        dateSpinner.setBounds(350, 200, 200, 30);
+        dateSpinner.setBounds(380, 200, 200, 30);
 
         comboTipo.addActionListener(e -> {
             String seleccion = (String) comboTipo.getSelectedItem();
