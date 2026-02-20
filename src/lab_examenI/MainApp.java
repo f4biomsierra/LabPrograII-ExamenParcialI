@@ -69,7 +69,7 @@ public class MainApp extends JFrame{
         String[] tipos = {"Movie", "Game"};
         JComboBox<String> comboTipo = new JComboBox<>(tipos);
         comboTipo.setFont(fuente);
-        comboTipo.setBounds(300, 50, 200, 30); 
+        comboTipo.setBounds(350, 50, 200, 30); 
         
         JLabel labelCodigo = new JLabel("Código:");
         labelCodigo.setFont(fuente);
@@ -77,19 +77,26 @@ public class MainApp extends JFrame{
 
         JTextField codigo_texto = new JTextField();
         codigo_texto.setFont(fuente);
-        codigo_texto.setBounds(300, 100, 200, 30);
+        codigo_texto.setBounds(350, 100, 200, 30);
         
-        JLabel labelNombre = new JLabel("Nombre:");
+        JLabel labelNombre =new JLabel("Nombre:");
         labelNombre.setFont(fuente);
         labelNombre.setBounds(50, 150, 200, 30); 
 
-        JTextField nombre_texto = new JTextField();
+        JTextField nombre_texto= new JTextField();
         nombre_texto.setFont(fuente);
-        nombre_texto.setBounds(300, 150, 200, 30); 
+        nombre_texto.setBounds(350, 150, 200, 30); 
 
-        JButton btnGuardar = new JButton("Guardar Ítem");
+        JButton btnImagen=new JButton("Cargar Imagen");
+        btnImagen.setFont(fuente);
+        btnImagen.setBounds(50, 200, 250, 40);
+
+        JLabel preview= new JLabel();
+        preview.setBounds(350, 200, 100, 100);
+        
+        JButton btnGuardar= new JButton("Guardar Ítem");
         btnGuardar.setFont(fuente);
-        btnGuardar.setBounds(300, 200, 300, 40);
+        btnGuardar.setBounds(350, 350, 300, 40);
         
         panelCentro.add(labelTipo);
         panelCentro.add(comboTipo);
@@ -97,19 +104,30 @@ public class MainApp extends JFrame{
         panelCentro.add(codigo_texto);
         panelCentro.add(labelNombre);
         panelCentro.add(nombre_texto);
+        panelCentro.add(btnImagen);
+        panelCentro.add(preview);
         panelCentro.add(btnGuardar);
+        
+        btnImagen.addActionListener(e -> {
+            ImageIcon img= cargarImagen();
+                if (img!= null) {
+                    preview.setIcon(img);
+                }
+        });
 
         btnGuardar.addActionListener(e -> {
-
             String tipo = comboTipo.getSelectedItem().toString();
             String codigo = codigo_texto.getText();
             String nombre = nombre_texto.getText();
+            ImageIcon imagenSeleccionada=(ImageIcon) preview.getIcon();
 
             if (tipo.equals("Movie")) {
                 Movie movie = new Movie(codigo, nombre);
+                movie.setImagen(imagenSeleccionada);
                 items.add(movie);
             } else {
                 Game game = new Game(codigo, nombre);
+                game.setImagen(imagenSeleccionada);
                 items.add(game);
                 game.submenu();
             }
@@ -188,13 +206,21 @@ public class MainApp extends JFrame{
             JPanel tarjeta = new JPanel();
             tarjeta.setLayout(null);
             tarjeta.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            tarjeta.setBounds(x, y, 250, 150);
+            tarjeta.setBounds(x, y, 320, 180);
 
+            JLabel imagenLabel= new JLabel();
+            imagenLabel.setBounds(190, 20, 100, 100);
+            
+            if (item.getImagen()!= null) {
+                imagenLabel.setIcon(item.getImagen());
+            }
+            tarjeta.add(imagenLabel);
+            
             JLabel nombre = new JLabel("Nombre: "+item.getNombre());
-            nombre.setBounds(10, 20, 230, 25);
+            nombre.setBounds(10, 20, 180, 25);
 
             JLabel precio = new JLabel("Precio: Lps "+item.getPrecioBase());
-            precio.setBounds(10, 50, 230, 25);
+            precio.setBounds(10, 50, 180, 25);
 
             tarjeta.add(nombre);
             tarjeta.add(precio);
@@ -204,7 +230,8 @@ public class MainApp extends JFrame{
                 estado.setBounds(10, 80, 230, 25);
                 tarjeta.add(estado);
             }
-
+          
+            
             panelCentro.add(tarjeta);
             x += 270;
             if (x > 500) {
@@ -213,5 +240,17 @@ public class MainApp extends JFrame{
             }
         }
         panelCentro.repaint();
+    }
+    
+    private ImageIcon cargarImagen() {
+        JFileChooser file= new JFileChooser();
+        int opcion= file.showOpenDialog(this);
+
+        if (opcion== JFileChooser.APPROVE_OPTION) {
+            ImageIcon original= new ImageIcon(file.getSelectedFile().getAbsolutePath());
+            Image imgEscalada= original.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            return new ImageIcon(imgEscalada);
+        }
+        return null;
     }
 }
