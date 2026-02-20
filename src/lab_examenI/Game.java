@@ -42,12 +42,16 @@ public class Game extends RentItem implements MenuActions {
         ventanaSubmenu.setSize(300, 350);
         ventanaSubmenu.setModal(true);
         ventanaSubmenu.setLocationRelativeTo(null);
-        ventanaSubmenu.setLayout(new GridLayout(4, 1, 10, 10));
+        
+        ventanaSubmenu.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        Dimension tamañoBtn=new Dimension(260, 45);
         
         JButton btnFecha=new JButton("Actualizar fecha de publicación");
         JButton btnAgregar=new JButton("Agregar especificación");
         JButton btnEspec=new JButton("Ver especificaciones");
         JButton btnCerrar=new JButton("Regresar al Menú");
+        
+        JButton[] botones={btnFecha, btnAgregar, btnEspec, btnCerrar};
         
         btnFecha.addActionListener(evento->{
             ejecutarOpcion(1);
