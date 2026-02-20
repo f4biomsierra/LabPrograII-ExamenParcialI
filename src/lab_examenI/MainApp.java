@@ -141,20 +141,19 @@ public class MainApp extends JFrame{
         String codigo = codigo_texto.getText().trim();
         String nombre = nombre_texto.getText().trim();
 
-        // --- VALIDACIÓN DE CAMPOS VACÍOS ---
         if (codigo.isEmpty() || nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor llene todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // --- VALIDACIÓN DE CÓDIGO ÚNICO ---
         for (RentItem item : items) {
             if (item.getCodigo().equals(codigo)) {
-                JOptionPane.showMessageDialog(this, "El código del ítem es inválido o ya existe", "Código Duplicado", JOptionPane.ERROR_MESSAGE);
-                return; // Sale del listener y no guarda nada
+                JOptionPane.showMessageDialog(this, "ERROR: Ya existe un ítem con el código " + codigo, "Código Duplicado", JOptionPane.ERROR_MESSAGE);
+                return; 
             }
         }
 
+        
         ImageIcon imagenSeleccionada = (ImageIcon) preview.getIcon();
         Date fecha = (Date) dateSpinner.getValue();
         Calendar cal = Calendar.getInstance();
@@ -164,19 +163,19 @@ public class MainApp extends JFrame{
             Movie movie = new Movie(codigo, nombre);
             movie.setImagen(imagenSeleccionada);
             movie.setFechaEstreno(cal);
-            items.add(movie);
+            items.add(movie); 
         } else {
             Game game = new Game(codigo, nombre);
             game.setImagen(imagenSeleccionada);
             game.setFechaPublicacion(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            items.add(game);
+            items.add(game); 
             game.submenu();
         }
 
         JOptionPane.showMessageDialog(this, "Ítem agregado correctamente");
-        limpiarCentro();
+        limpiarCentro(); 
     });
-}
+    }
 
     public void rentar() {
         limpiarCentro();
