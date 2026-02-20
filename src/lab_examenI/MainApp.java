@@ -99,13 +99,15 @@ public class MainApp extends JFrame{
         preview.setBounds(350, 260, 100, 100);
         
         labelFechaDinamica = new JLabel("Fecha de Estreno:");
-        labelFechaDinamica.setBounds(50, 170, 250, 30);
+        labelFechaDinamica.setFont(fuente);
+        labelFechaDinamica.setBounds(50, 200, 250, 30);
         
         SpinnerDateModel model = new SpinnerDateModel();
         dateSpinner = new JSpinner(model);
         JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy");
         dateSpinner.setEditor(editor);
-        dateSpinner.setBounds(350, 170, 200, 30);
+        dateSpinner.setFont(fuente);
+        dateSpinner.setBounds(350, 200, 200, 30);
 
         comboTipo.addActionListener(e -> {
             String seleccion = (String) comboTipo.getSelectedItem();
@@ -131,19 +133,19 @@ public class MainApp extends JFrame{
         btnImagen.addActionListener(e -> {
             ImageIcon img= cargarImagen();
                 if (img!= null) {
-                    preview.setIcon(img);
-                }
+                preview.setIcon(img);
+            }
         });
 
         btnGuardar.addActionListener(e -> {
             String tipo = comboTipo.getSelectedItem().toString();
             String codigo = codigo_texto.getText();
             String nombre = nombre_texto.getText();
-            ImageIcon imagenSeleccionada=(ImageIcon) preview.getIcon();
+            ImageIcon imagenSeleccionada = (ImageIcon) preview.getIcon();
             Date fecha = (Date) dateSpinner.getValue();
             Calendar cal = Calendar.getInstance();
             cal.setTime(fecha);
-                
+
             if (tipo.equals("Movie")) {
                 Movie movie = new Movie(codigo, nombre);
                 movie.setImagen(imagenSeleccionada);
@@ -161,64 +163,116 @@ public class MainApp extends JFrame{
             limpiarCentro();
         });
     }
-    
-    public void rentar(){
+
+    public void rentar() {
         limpiarCentro();
 
         JLabel labelCodigo = new JLabel("Código:");
         labelCodigo.setFont(fuente);
-        labelCodigo.setBounds(50, 80, 150, 30);
+        labelCodigo.setBounds(50, 30, 150, 30);
 
         JTextField codigo_texto = new JTextField();
         codigo_texto.setFont(fuente);
-        codigo_texto.setBounds(250, 80, 200, 30);
+        codigo_texto.setBounds(250, 30, 200, 30);
 
-        JLabel labelDias = new JLabel("Días:");
-        labelDias.setFont(fuente);
-        labelDias.setBounds(50, 130, 150, 30);
+        JButton btnVerificar = new JButton("Verificar Ítem");
+        btnVerificar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnVerificar.setBounds(50, 70, 200, 30);
 
-        JTextField dias_texto = new JTextField();
-        dias_texto.setFont(fuente);
-        dias_texto.setBounds(250, 130, 200, 30);
-
-        JButton btnCalcular = new JButton("Calcular");
-        btnCalcular.setFont(fuente);
-        btnCalcular.setBounds(250, 190, 200, 40);
+        JPanel datosPanel = new JPanel(null);
+        datosPanel.setBounds(50, 80, 700, 400);
+        datosPanel.setOpaque(false);
 
         panelCentro.add(labelCodigo);
         panelCentro.add(codigo_texto);
-        panelCentro.add(labelDias);
-        panelCentro.add(dias_texto);
-        panelCentro.add(btnCalcular);
+        panelCentro.add(btnVerificar);
+        panelCentro.add(datosPanel);
 
-        panelCentro.repaint();
+        btnVerificar.addActionListener(e -> {
+            datosPanel.removeAll();
+            RentItem encontrado = null;
 
-        btnCalcular.addActionListener(e -> {
-            for (RentItem item: items) {
-                if (item.getCodigo().equals(codigo_texto.getText())) {
-                    int dias = Integer.parseInt(dias_texto.getText());
-                    double total = item.pagoRenta(dias);
-                    JOptionPane.showMessageDialog(this,
-                            "Total a pagar: Lps " + total);
-                    return;
+            try {
+                String codBuscado =codigo_texto.getText();
+                for (RentItem item : items) {
+                    if (item.getCodigo().equals(codBuscado)) {
+                        encontrado = item;
+                        break;
+                    }
                 }
+            } catch (NumberFormatException ex) {
+                JLabel error = new JLabel("Error: Ingrese un código numérico.");
+                error.setForeground(Color.RED);
+                error.setBounds(0, 0, 400, 30);
+                datosPanel.add(error);
             }
-            JOptionPane.showMessageDialog(this, "Item No Existe");
-        });
-    }
-    
-    public void ejecutarSub(){
-        limpiarCentro();
-        JLabel labelCodigo = new JLabel("Código:");
-        labelCodigo.setFont(fuente);
-        labelCodigo.setBounds(50, 80, 150, 30);
 
-        JTextField codigo_texto = new JTextField();
-        codigo_texto.setFont(fuente);
-        codigo_texto.setBounds(250, 80, 200, 30);
-        
-        panelCentro.add(labelCodigo);
-        panelCentro.add(labelCodigo);
+            if (encontrado != null) {
+                JLabel info = new JLabel("Datos del Item");
+                info.setFont(fuente);
+                info.setBounds(0, 30, 400, 30);
+                
+                JLabel labelNombre= new JLabel ("Nombre: "+ encontrado.getNombre());
+                labelNombre.setFont(fuente);
+                labelNombre.setBounds(0, 75, 400, 30);
+                
+                JLabel labelPrecio= new JLabel ("Precio Base: Lps. " + encontrado.getPrecioBase());
+                labelPrecio.setFont(fuente);
+                labelPrecio.setBounds(0, 115, 400, 30);
+
+                JLabel imgView = new JLabel();
+                imgView.setHorizontalAlignment(JLabel.CENTER);
+                if(encontrado.getImagen() != null) 
+                    imgView.setIcon(encontrado.getImagen());
+                imgView.setBounds(480, 30, 200, 200);
+                imgView.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+                JLabel labelDias = new JLabel("Cantidad de Días:");
+                labelDias.setFont(fuente);
+                labelDias.setBounds(0, 170, 250, 30);
+
+                JTextField dias_texto = new JTextField();
+                dias_texto.setFont(fuente);
+                dias_texto.setBounds(260, 170, 200, 30);
+
+                JButton btnCalcular = new JButton("Calcular Renta");
+                btnCalcular.setBounds(0, 220, 260, 45);
+                btnCalcular.setFont(fuente);
+
+                JLabel lblTotal = new JLabel("Total a Pagar: ---");
+                lblTotal.setFont(new Font("Arial", Font.BOLD, 26));
+                lblTotal.setBounds(0, 280, 500, 40);
+
+                final RentItem itemFinal = encontrado;
+                btnCalcular.addActionListener(ev -> {
+                    try {
+                        int d = Integer.parseInt(dias_texto.getText());
+                        double total = itemFinal.pagoRenta(d);
+                        lblTotal.setText("Total a Pagar: Lps. " + total);
+                    } catch (Exception ex) {
+                        lblTotal.setText("Error: Ingrese días válidos.");
+                    }
+                });
+
+                datosPanel.add(info);
+                datosPanel.add(imgView);
+                datosPanel.add(labelDias);
+                datosPanel.add(dias_texto);
+                datosPanel.add(btnCalcular);
+                datosPanel.add(lblTotal);
+                datosPanel.add(labelNombre);
+                datosPanel.add(labelPrecio);
+
+            } else if (!codigo_texto.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Item No Existe." );
+               
+            }
+
+            datosPanel.revalidate();
+            datosPanel.repaint();
+        });
+
+        panelCentro.revalidate();
         panelCentro.repaint();
     }
     
@@ -243,25 +297,29 @@ public class MainApp extends JFrame{
             
             JLabel nombre = new JLabel("Nombre: "+item.getNombre());
             nombre.setBounds(10, 20, 180, 25);
+            
+            JLabel codigo = new JLabel("Codigo: "+item.getCodigo());
+            codigo.setBounds(10, 50, 180, 25);
 
             JLabel precio = new JLabel("Precio: Lps "+item.getPrecioBase());
-            precio.setBounds(10, 50, 180, 25);
+            precio.setBounds(10, 80, 180, 25);
 
             tarjeta.add(nombre);
+            tarjeta.add(codigo);
             tarjeta.add(precio);
 
             if (item instanceof Movie) {
                 JLabel estado = new JLabel("Estado: "+((Movie) item).getEstado());
-                estado.setBounds(10, 80, 230, 25);
+                estado.setBounds(10, 110, 230, 25);
                 tarjeta.add(estado);
             }
           
             
             panelCentro.add(tarjeta);
-            x += 270;
-            if (x > 500) {
+            x += 340;
+            if (x > 700) {
                 x = 50;
-                y+= 180;
+                y+= 200;
             }
         }
         panelCentro.repaint();
