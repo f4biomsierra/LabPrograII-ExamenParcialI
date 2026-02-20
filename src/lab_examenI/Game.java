@@ -53,6 +53,11 @@ public class Game extends RentItem implements MenuActions {
         
         JButton[] botones={btnFecha, btnAgregar, btnEspec, btnCerrar};
         
+        for(JButton btnIndividual : botones){
+            btnIndividual.setPreferredSize(tamañoBtn);
+            btnIndividual.setFocusable(false);
+        }
+        
         btnFecha.addActionListener(evento->{
             ejecutarOpcion(1);
         });
